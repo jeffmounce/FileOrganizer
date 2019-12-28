@@ -1,47 +1,91 @@
 ﻿namespace FileOrganizer
 {
+	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Security.Cryptography;
+	using System.Text;
+	using System.Windows.Forms;
 
 	internal class FileOperationDeDuplicate : FileOperation
 	{
-		public override void DoOperation(List<string> folders)
+		public override void DoOperation(List<string> folders, TextBox txtLog)
 		{
-			Dictionary<long, string> sizeByFilepath = new Dictionary<long, string>();
-			HashSet<string> hashesFound = new HashSet<string>();
+			HashSet<FileInfo> filesToRemove = new HashSet<FileInfo>();
+
+			Dictionary<long, string> sizes = new Dictionary<long, string>();
+			HashSet<string> filesKnown = new HashSet<string>();
+			HashSet<string> hashes = new HashSet<string>();
 
 			foreach (string folder in folders)
 			{
 				DirectoryInfo diFolder = new DirectoryInfo(folder);
-				foreach (FileInfo fiFile in diFolder.EnumerateFiles())
+
+				ProcessDirectory(diFolder, sizes, filesKnown, hashes, filesToRemove);
+
+				foreach (DirectoryInfo diChild in diFolder.EnumerateDirectories())
 				{
-					long fileSize = fiFile.Length;
-					if (sizeByFilepath.ContainsKey(fileSize))
+					ProcessDirectory(diChild, sizes, filesKnown, hashes, filesToRemove);
+				}
+			}
+
+			foreach (FileInfo fiToRemove in filesToRemove)
+			{
+				fiToRemove.Delete();
+				StringBuilder sb = new StringBuilder();
+				sb.AppendLine($"DELETED: '{fiToRemove.FullName}' -- PRESERVED: '{sizes[fiToRemove.Length]}'");
+				txtLog.AppendText(sb.ToString());
+			}
+		}
+
+		private void ProcessDirectory(DirectoryInfo diFolder, Dictionary<long, string> sizeByFilepath, HashSet<string> filesComputed, HashSet<string> hashesFound, HashSet<FileInfo> fileToRemove)
+		{
+			foreach (FileInfo fiFile in diFolder.EnumerateFiles())
+			{
+				long fileSize = fiFile.Length;
+				if (sizeByFilepath.ContainsKey(fileSize))
+				{
+					string previousFile = sizeByFilepath[fileSize];
+					if (!filesComputed.Contains(previousFile))
 					{
-						string previousFile = sizeByFilepath[fileSize];
-						if(!hashesFound.Contains(previousFile))
-						string hash = ComputeHash(fiFile);
+						FileInfo fiPreviousFile = new FileInfo(previousFile);
+						string hashPrevious = ComputeHash(fiPreviousFile);
+						AddFileHash(filesComputed, hashesFound, hashPrevious, previousFile);
+					}
+
+					string hash = ComputeHash(fiFile);
+					if (!hashesFound.Contains(hash))
+					{
+						AddFileHash(filesComputed, hashesFound, hash, previousFile);
 					}
 					else
 					{
-						sizeByFilepath[fileSize] = fiFile.FullName;
+						fileToRemove.Add(fiFile);
 					}
 				}
+				else
+				{
+					sizeByFilepath[fileSize] = fiFile.FullName;
+				}
 			}
-			Dictionary<string, List<string>> folderHashes = GatherFileHashes(folders);
+		}
+
+		private static void AddFileHash(HashSet<string> filesComputed, HashSet<string> hashesFound, string hash, string fileName)
+		{
+			hashesFound.Add(hash);
+			filesComputed.Add(fileName);
 		}
 
 		private string ComputeHash(FileInfo fiFile)
 		{
-			
-		}
-
-		private Dictionary<string, List<string>> GatherFileHashes(List<string> folders)
-		{
-			Dictionary<string, List<string>> fileHashesByFiles = new Dictionary<string, List<string>>();
-
-
-			return fileHashesByFiles;
+			using (MD5 md5 = MD5.Create())
+			{
+				using (FileStream stream = File.OpenRead(fiFile.FullName))
+				{
+					byte[] hash = md5.ComputeHash(stream);
+					return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();;
+				}
+			}
 		}
 	}
 }

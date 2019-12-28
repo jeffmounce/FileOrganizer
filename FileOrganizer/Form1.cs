@@ -10,6 +10,7 @@
 	public partial class MainForm : Form
 	{
 		private readonly Dictionary<string, bool> _directories = new Dictionary<string, bool>();
+		private readonly HashSet<FileOperation> _operations = new HashSet<FileOperation>();
 
 		public MainForm()
 		{
@@ -118,7 +119,23 @@
 
 		private void startOperation_Click(object sender, System.EventArgs e)
 		{
+			_operations.Add(new FileOperationDeDuplicate());
 
+			chkShowLog.Checked = true;
+
+			foreach (FileOperation fileOperation in _operations)
+			{
+				List<string> folders = new List<string>();
+				foreach (string key in _directories.Keys)
+				{
+					if (_directories[key])
+					{
+						folders.Add(key);
+					}
+				}
+
+				fileOperation.DoOperation(folders, txtLog);
+			}
 		}
 
 		private void chkShowLog_CheckedChanged(object sender, System.EventArgs e)

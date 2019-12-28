@@ -41,7 +41,7 @@
 			this.lstFolders.FormattingEnabled = true;
 			this.lstFolders.Location = new System.Drawing.Point(13, 12);
 			this.lstFolders.Name = "lstFolders";
-			this.lstFolders.Size = new System.Drawing.Size(1667, 829);
+			this.lstFolders.Size = new System.Drawing.Size(2443, 895);
 			this.lstFolders.TabIndex = 0;
 			this.lstFolders.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.lstFolders_ItemCheck);
 			this.lstFolders.DragDrop += new System.Windows.Forms.DragEventHandler(this.lstFolders_DragDrop);
@@ -50,7 +50,7 @@
 			// startOperation
 			// 
 			this.startOperation.FlatAppearance.BorderSize = 2;
-			this.startOperation.Location = new System.Drawing.Point(12, 860);
+			this.startOperation.Location = new System.Drawing.Point(12, 923);
 			this.startOperation.Name = "startOperation";
 			this.startOperation.Size = new System.Drawing.Size(781, 77);
 			this.startOperation.TabIndex = 1;
@@ -63,13 +63,13 @@
 			this.txtLog.Location = new System.Drawing.Point(13, 13);
 			this.txtLog.Multiline = true;
 			this.txtLog.Name = "txtLog";
-			this.txtLog.Size = new System.Drawing.Size(1667, 828);
+			this.txtLog.Size = new System.Drawing.Size(2443, 894);
 			this.txtLog.TabIndex = 2;
 			this.txtLog.Visible = false;
 			// 
 			// btnClear
 			// 
-			this.btnClear.Location = new System.Drawing.Point(810, 860);
+			this.btnClear.Location = new System.Drawing.Point(810, 923);
 			this.btnClear.Name = "btnClear";
 			this.btnClear.Size = new System.Drawing.Size(451, 77);
 			this.btnClear.TabIndex = 3;
@@ -81,7 +81,7 @@
 			// 
 			this.chkShowLog.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkShowLog.AutoSize = true;
-			this.chkShowLog.Location = new System.Drawing.Point(1283, 860);
+			this.chkShowLog.Location = new System.Drawing.Point(1283, 940);
 			this.chkShowLog.Name = "chkShowLog";
 			this.chkShowLog.Size = new System.Drawing.Size(151, 42);
 			this.chkShowLog.TabIndex = 5;
@@ -93,7 +93,8 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1692, 949);
+			this.AutoSize = true;
+			this.ClientSize = new System.Drawing.Size(2468, 1012);
 			this.Controls.Add(this.chkShowLog);
 			this.Controls.Add(this.btnClear);
 			this.Controls.Add(this.startOperation);
@@ -103,6 +104,7 @@
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "MainForm";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "File Organizer";
 			this.ResumeLayout(false);
 			this.PerformLayout();
