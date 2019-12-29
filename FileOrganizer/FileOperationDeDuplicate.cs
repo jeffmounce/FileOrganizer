@@ -53,7 +53,6 @@
 				}
 
 				updateProgressFunc.Invoke();
-				Thread.Sleep(1000);
 			}
 
 			foreach (DirectoryInfo diChild in diFolder.EnumerateDirectories())
