@@ -5,6 +5,7 @@
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
 	using System.Windows.Forms;
 
 	public partial class MainForm : Form
@@ -123,25 +124,62 @@
 
 			chkShowLog.Checked = true;
 
+			List<string> folders = new List<string>();
+			foreach (string key in _directories.Keys)
+			{
+				if (_directories[key])
+				{
+					folders.Add(key);
+				}
+			}
+
+			int fileCount = GetFileCount(folders);
+			progressStart.Maximum = fileCount;
+			progressStart.Step = 1;
+			progressStart.Visible = true;
+
 			foreach (FileOperation fileOperation in _operations)
 			{
-				List<string> folders = new List<string>();
-				foreach (string key in _directories.Keys)
-				{
-					if (_directories[key])
-					{
-						folders.Add(key);
-					}
-				}
-
-				fileOperation.DoOperation(folders, txtLog);
+				Task myTask = Task.Run(() => fileOperation.DoOperation(folders, UpdateLog, UpdateProgress));
 			}
+		}
+
+		private int GetFileCount(List<string> folders)
+		{
+			int retVal = 0;
+
+			foreach (string folder in folders)
+			{
+				DirectoryInfo directory = new DirectoryInfo(folder);
+				retVal += GetFileCount(directory);
+			}
+
+			return retVal;
+		}
+
+		private int GetFileCount(DirectoryInfo directory)
+		{
+			int retVal = 0;
+
+			retVal += directory.EnumerateFiles().Count();
+
+			foreach (DirectoryInfo directoryInfo in directory.EnumerateDirectories())
+			{
+				retVal += GetFileCount(directoryInfo);
+			}
+
+			return retVal;
 		}
 
 		private void chkShowLog_CheckedChanged(object sender, System.EventArgs e)
 		{
 			lstFolders.Visible = !chkShowLog.Checked;
 			txtLog.Visible = chkShowLog.Checked;
+
+			if (progressStart.Visible)
+			{
+				progressStart.Visible = false;
+			}
 		}
 
 		private void lstFolders_ItemCheck(object sender, ItemCheckEventArgs e)
@@ -150,6 +188,36 @@
 			string folder = lstFolders.Items[index] as string;
 			Debug.Assert(folder != null, nameof(folder) + " != null");
 			_directories[folder] = e.NewValue == CheckState.Checked;
+		}
+
+		private delegate void ProgressDelegate();
+
+		private void UpdateProgress()
+		{
+			if (progressStart.InvokeRequired)
+			{
+				ProgressDelegate d = new ProgressDelegate(UpdateProgress);
+				progressStart.Invoke(d);
+			}
+			else
+			{
+				progressStart.PerformStep();
+			}
+		}
+
+		private delegate void WriteLogDelegate(string toWrite);
+
+		private void UpdateLog(string toWrite)
+		{
+			if (txtLog.InvokeRequired)
+			{
+				WriteLogDelegate d = new WriteLogDelegate(UpdateLog);
+				txtLog.Invoke(d, new object[] {toWrite});
+			}
+			else
+			{
+				txtLog.AppendText(toWrite);
+			}
 		}
 	}
 }

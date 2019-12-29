@@ -33,6 +33,7 @@
 			this.txtLog = new System.Windows.Forms.TextBox();
 			this.btnClear = new System.Windows.Forms.Button();
 			this.chkShowLog = new System.Windows.Forms.CheckBox();
+			this.progressStart = new System.Windows.Forms.ProgressBar();
 			this.SuspendLayout();
 			// 
 			// lstFolders
@@ -81,7 +82,7 @@
 			// 
 			this.chkShowLog.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkShowLog.AutoSize = true;
-			this.chkShowLog.Location = new System.Drawing.Point(1283, 940);
+			this.chkShowLog.Location = new System.Drawing.Point(1283, 923);
 			this.chkShowLog.Name = "chkShowLog";
 			this.chkShowLog.Size = new System.Drawing.Size(151, 42);
 			this.chkShowLog.TabIndex = 5;
@@ -89,12 +90,21 @@
 			this.chkShowLog.UseVisualStyleBackColor = true;
 			this.chkShowLog.CheckedChanged += new System.EventHandler(this.chkShowLog_CheckedChanged);
 			// 
+			// progressStart
+			// 
+			this.progressStart.Location = new System.Drawing.Point(1283, 980);
+			this.progressStart.Name = "progressStart";
+			this.progressStart.Size = new System.Drawing.Size(1173, 20);
+			this.progressStart.TabIndex = 6;
+			this.progressStart.Visible = false;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(2468, 1012);
+			this.Controls.Add(this.progressStart);
 			this.Controls.Add(this.chkShowLog);
 			this.Controls.Add(this.btnClear);
 			this.Controls.Add(this.startOperation);
@@ -118,6 +128,7 @@
 		private System.Windows.Forms.TextBox txtLog;
 		private System.Windows.Forms.Button btnClear;
 		private System.Windows.Forms.CheckBox chkShowLog;
+		private System.Windows.Forms.ProgressBar progressStart;
 	}
 }
 
