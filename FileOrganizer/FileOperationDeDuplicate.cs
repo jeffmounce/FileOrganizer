@@ -33,8 +33,6 @@
 		{
 			foreach (FileInfo fiFile in diFolder.EnumerateFiles())
 			{
-				Thread.Sleep(1000);
-
 				if (token.IsCancellationRequested) return;
 
 				long fileSize = fiFile.Length;
