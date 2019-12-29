@@ -136,6 +136,8 @@
 		{
 			if (_directories.Count == 0) return;
 
+			InitializeOperations();
+
 			Folders = DetermineFolders();
 
 			PrepareProgressBar();
@@ -171,7 +173,7 @@
 		private void PrepareProgressBar()
 		{
 			int fileCount = GetFileCount(Folders);
-			progressStart.Maximum = fileCount;
+			progressStart.Maximum = fileCount * _operations.Count;
 			progressStart.Step = 1;
 			progressStart.Value = 0;
 		}
@@ -185,13 +187,16 @@
 			progressStart.Visible = true;
 		}
 
-		private void RunOperations()
+		private void InitializeOperations()
 		{
 			_operations = new List<FileOperation>
 			{
 				new FileOperationDeDuplicate()
 			};
+		}
 
+		private void RunOperations()
+		{
 			_idxOperation = 0;
 
 			DoNextOperation(MyTask);
