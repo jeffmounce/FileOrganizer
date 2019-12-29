@@ -43,7 +43,7 @@
 			this.lstFolders.BackColor = System.Drawing.SystemColors.Window;
 			this.lstFolders.FormattingEnabled = true;
 			this.lstFolders.Location = new System.Drawing.Point(5, 5);
-			this.lstFolders.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+			this.lstFolders.Margin = new System.Windows.Forms.Padding(1);
 			this.lstFolders.Name = "lstFolders";
 			this.lstFolders.Size = new System.Drawing.Size(918, 394);
 			this.lstFolders.TabIndex = 0;
@@ -55,7 +55,7 @@
 			// 
 			this.startOperation.FlatAppearance.BorderSize = 2;
 			this.startOperation.Location = new System.Drawing.Point(5, 403);
-			this.startOperation.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+			this.startOperation.Margin = new System.Windows.Forms.Padding(1);
 			this.startOperation.Name = "startOperation";
 			this.startOperation.Size = new System.Drawing.Size(293, 32);
 			this.startOperation.TabIndex = 1;
@@ -68,9 +68,10 @@
 			this.txtLog.BackColor = System.Drawing.SystemColors.Info;
 			this.txtLog.ForeColor = System.Drawing.SystemColors.HotTrack;
 			this.txtLog.Location = new System.Drawing.Point(5, 5);
-			this.txtLog.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+			this.txtLog.Margin = new System.Windows.Forms.Padding(1);
 			this.txtLog.Multiline = true;
 			this.txtLog.Name = "txtLog";
+			this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
 			this.txtLog.Size = new System.Drawing.Size(918, 394);
 			this.txtLog.TabIndex = 5;
 			this.txtLog.Visible = false;
@@ -78,7 +79,7 @@
 			// btnClear
 			// 
 			this.btnClear.Location = new System.Drawing.Point(305, 403);
-			this.btnClear.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+			this.btnClear.Margin = new System.Windows.Forms.Padding(1);
 			this.btnClear.Name = "btnClear";
 			this.btnClear.Size = new System.Drawing.Size(96, 32);
 			this.btnClear.TabIndex = 2;
@@ -91,7 +92,7 @@
 			this.chkShowLog.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkShowLog.AutoSize = true;
 			this.chkShowLog.Location = new System.Drawing.Point(481, 403);
-			this.chkShowLog.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+			this.chkShowLog.Margin = new System.Windows.Forms.Padding(1);
 			this.chkShowLog.Name = "chkShowLog";
 			this.chkShowLog.Size = new System.Drawing.Size(65, 23);
 			this.chkShowLog.TabIndex = 3;
@@ -102,7 +103,7 @@
 			// progressStart
 			// 
 			this.progressStart.Location = new System.Drawing.Point(482, 427);
-			this.progressStart.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+			this.progressStart.Margin = new System.Windows.Forms.Padding(1);
 			this.progressStart.Name = "progressStart";
 			this.progressStart.Size = new System.Drawing.Size(440, 8);
 			this.progressStart.TabIndex = 6;
@@ -111,7 +112,7 @@
 			// cancelOperation
 			// 
 			this.cancelOperation.Location = new System.Drawing.Point(858, 403);
-			this.cancelOperation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.cancelOperation.Margin = new System.Windows.Forms.Padding(2);
 			this.cancelOperation.Name = "cancelOperation";
 			this.cancelOperation.Size = new System.Drawing.Size(65, 23);
 			this.cancelOperation.TabIndex = 7;
@@ -134,7 +135,7 @@
 			this.Controls.Add(this.lstFolders);
 			this.Controls.Add(this.txtLog);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+			this.Margin = new System.Windows.Forms.Padding(1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "MainForm";
