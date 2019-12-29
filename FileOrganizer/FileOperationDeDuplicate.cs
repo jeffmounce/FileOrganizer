@@ -9,7 +9,7 @@
 
 	internal class FileOperationDeDuplicate : FileOperation
 	{
-		public override void DoOperation(List<string> folders, Action<string> updateLogFunc, Action updateProgressFunc)
+		public override void DoOperation(List<string> folders, Action<string> updateLogFunc, Action updateProgressFunc, CancellationToken token)
 		{
 			Dictionary<long, string> sizes = new Dictionary<long, string>();
 			HashSet<string> filesKnown = new HashSet<string>();
@@ -18,14 +18,25 @@
 			foreach (string folder in folders)
 			{
 				DirectoryInfo diFolder = new DirectoryInfo(folder);
-				ProcessDirectory(diFolder, sizes, filesKnown, hashes, updateProgressFunc, updateLogFunc);
+				ProcessDirectory(diFolder, sizes, filesKnown, hashes, updateProgressFunc, updateLogFunc, token);
 			}
 		}
 
-		private void ProcessDirectory(DirectoryInfo diFolder, Dictionary<long, string> sizes, HashSet<string> filesKnown, HashSet<string> hashes, Action updateProgressFunc, Action<string> updateLogFunc)
+		private void ProcessDirectory(
+			DirectoryInfo diFolder,
+			Dictionary<long, string> sizes,
+			HashSet<string> filesKnown,
+			HashSet<string> hashes,
+			Action updateProgressFunc,
+			Action<string> updateLogFunc,
+			CancellationToken token)
 		{
 			foreach (FileInfo fiFile in diFolder.EnumerateFiles())
 			{
+				Thread.Sleep(1000);
+
+				if (token.IsCancellationRequested) return;
+
 				long fileSize = fiFile.Length;
 				if (sizes.ContainsKey(fileSize))
 				{
@@ -57,7 +68,7 @@
 
 			foreach (DirectoryInfo diChild in diFolder.EnumerateDirectories())
 			{
-				ProcessDirectory(diChild, sizes, filesKnown, hashes, updateProgressFunc, updateLogFunc);
+				ProcessDirectory(diChild, sizes, filesKnown, hashes, updateProgressFunc, updateLogFunc, token);
 			}
 		}
 
@@ -69,7 +80,7 @@
 			updateLogFunc.Invoke(sb.ToString());
 		}
 
-		private static void AddFileHash(HashSet<string> filesComputed, HashSet<string> hashesFound, string hash, string fileName)
+		private void AddFileHash(HashSet<string> filesComputed, HashSet<string> hashesFound, string hash, string fileName)
 		{
 			hashesFound.Add(hash);
 			filesComputed.Add(fileName);

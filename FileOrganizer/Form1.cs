@@ -5,13 +5,21 @@
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Windows.Forms;
 
 	public partial class MainForm : Form
 	{
 		private readonly Dictionary<string, bool> _directories = new Dictionary<string, bool>();
-		private readonly HashSet<FileOperation> _operations = new HashSet<FileOperation>();
+
+		public List<string> Folders { get; set; }
+
+		private List<FileOperation> _operations;
+		private int _idxOperation;
+
+		public Task MyTask { get; set; }
+		public CancellationTokenSource MyCancelToken { get; set; }
 
 		public MainForm()
 		{
@@ -111,6 +119,12 @@
 		private void btnClear_Click(object sender, System.EventArgs e)
 		{
 			ClearList();
+			ClearDirectories();
+		}
+
+		private void ClearDirectories()
+		{
+			_directories.Clear();
 		}
 
 		private void ClearList()
@@ -120,10 +134,28 @@
 
 		private void startOperation_Click(object sender, System.EventArgs e)
 		{
-			_operations.Add(new FileOperationDeDuplicate());
+			if (_directories.Count == 0) return;
 
-			chkShowLog.Checked = true;
+			Folders = DetermineFolders();
 
+			PrepareProgressBar();
+
+			StartOperation();
+
+			MyCancelToken = new CancellationTokenSource();
+
+			RunOperations();
+		}
+
+		private void cancelOperation_Click(object sender, System.EventArgs e)
+		{
+			MyCancelToken.Cancel(false);
+
+			StopOperation();
+		}
+
+		private List<string> DetermineFolders()
+		{
 			List<string> folders = new List<string>();
 			foreach (string key in _directories.Keys)
 			{
@@ -133,14 +165,73 @@
 				}
 			}
 
-			int fileCount = GetFileCount(folders);
+			return folders;
+		}
+
+		private void PrepareProgressBar()
+		{
+			int fileCount = GetFileCount(Folders);
 			progressStart.Maximum = fileCount;
 			progressStart.Step = 1;
-			progressStart.Visible = true;
+			progressStart.Value = 0;
+		}
 
-			foreach (FileOperation fileOperation in _operations)
+		private void StartOperation()
+		{
+			txtLog.Clear();
+			startOperation.Enabled = false;
+			chkShowLog.Checked = true;
+			cancelOperation.Visible = true;
+			progressStart.Visible = true;
+		}
+
+		private void RunOperations()
+		{
+			_operations = new List<FileOperation>
 			{
-				Task myTask = Task.Run(() => fileOperation.DoOperation(folders, UpdateLog, UpdateProgress));
+				new FileOperationDeDuplicate()
+			};
+
+			_idxOperation = 0;
+
+			DoNextOperation(MyTask);
+		}
+
+		private void DoNextOperation(Task myTask)
+		{
+			if (_idxOperation < _operations.Count)
+			{
+				FileOperation fileOperation = _operations[_idxOperation];
+				CancellationToken cancellationToken = MyCancelToken.Token;
+				MyTask = Task.Run(() => fileOperation.DoOperation(Folders, UpdateLog, UpdateProgress, cancellationToken), cancellationToken);
+				MyTask.ContinueWith(DoNextOperation, cancellationToken);
+				_idxOperation++;
+			}
+			else
+			{
+				StopOperation();
+			}
+		}
+
+		private delegate void StopOperationDelegate();
+
+		private void StopOperation()
+		{
+			if (cancelOperation.InvokeRequired)
+			{
+				StopOperationDelegate d = StopOperation;
+				cancelOperation.Invoke(d);
+			}
+			else
+			{
+				cancelOperation.Visible = false;
+				startOperation.Enabled = true;
+
+				Folders = null;
+				MyTask = null;
+				_operations = null;
+				_idxOperation = 0;
+				MyCancelToken = null;
 			}
 		}
 
@@ -196,7 +287,7 @@
 		{
 			if (progressStart.InvokeRequired)
 			{
-				ProgressDelegate d = new ProgressDelegate(UpdateProgress);
+				ProgressDelegate d = UpdateProgress;
 				progressStart.Invoke(d);
 			}
 			else
@@ -211,8 +302,8 @@
 		{
 			if (txtLog.InvokeRequired)
 			{
-				WriteLogDelegate d = new WriteLogDelegate(UpdateLog);
-				txtLog.Invoke(d, new object[] {toWrite});
+				WriteLogDelegate d = UpdateLog;
+				txtLog.Invoke(d, toWrite);
 			}
 			else
 			{
